@@ -5,9 +5,11 @@
 // To keep your imports tidy, follow the ordering guidelines at
 // https://www.dartlang.org/guides/language/effective-dart/style#ordering
 import 'package:flutter/material.dart';
-
 // @required is defined in the meta.dart package
 import 'package:meta/meta.dart';
+
+import './converterRoute.dart';
+import './unit.dart';
 
 // We use an underscore to indicate that these variables are private.
 // See https://www.dartlang.org/guides/language/effective-dart/design#libraries
@@ -22,6 +24,7 @@ class Category extends StatelessWidget {
   final String name;
   final ColorSwatch color;
   final IconData iconLocation;
+  final List<Unit> units;
 
   /// Creates a [Category].
   ///
@@ -30,17 +33,41 @@ class Category extends StatelessWidget {
   // While the @required checks for whether a named parameter is passed in,
   // it doesn't check whether the object passed in is null. We check that
   // in the assert statement.
-  /* The icon, color, and text should be passed into the Category widget upon instantiation. They should be required. */
   const Category({
     Key key,
-    @required
-        this.name, //http://dart.goodev.org/guides/language/language-tour#metadata元数据
+    @required this.name,
     @required this.color,
     @required this.iconLocation,
+    @required this.units,
   })  : assert(name != null),
         assert(color != null),
         assert(iconLocation != null),
+        assert(units != null),
         super(key: key);
+
+  /// Navigates to the [ConverterRoute].
+  void _navigateToConverter(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute<Null>(
+      builder: (BuildContext context) {
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 2.0,
+            title: Text(
+              name,
+              style: Theme.of(context).textTheme.display1,
+            ),
+            centerTitle: true,
+            backgroundColor: color,
+          ),
+          body: ConverterRoute(
+            color: color,
+            name: name,
+            units: units,
+          ),
+        );
+      },
+    ));
+  }
 
   /// Builds a custom widget that shows [Category] information.
   ///
@@ -61,10 +88,7 @@ class Category extends StatelessWidget {
           splashColor: color,
           // We can use either the () => function() or the () { function(); }
           // syntax.
-          onTap: () {
-            //如果没有就不会有ink效果
-            print('I was tapped!');
-          },
+          onTap: () => _navigateToConverter(context),
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Row(
